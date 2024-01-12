@@ -5,7 +5,7 @@ import "unsafe"
 func main() {}
 
 //export applyBlackAndWhiteFilter
-func applyBlackAndWhiteFilter(p *uintptr, size int) {
+func applyBlackAndWhiteFilter(p *int, size int) {
 	up := uintptr(unsafe.Pointer(p))
 
 	i := 0
@@ -20,7 +20,27 @@ func applyBlackAndWhiteFilter(p *uintptr, size int) {
 		*ap1 = filter
 		*ap2 = filter
 
-		i += 4
+		i += 3
 	}
 
+}
+
+//export applyRedFilter
+func applyRedFilter(p *int, size int) {
+	up := uintptr(unsafe.Pointer(p))
+
+	i := 0
+	for i < size {
+		ap1 := (*byte)(unsafe.Pointer(up + uintptr(i+1)))
+		ap2 := (*byte)(unsafe.Pointer(up + uintptr(i+2)))
+		ap5 := (*byte)(unsafe.Pointer(up + uintptr(i+5)))
+		ap6 := (*byte)(unsafe.Pointer(up + uintptr(i+6)))
+
+		*ap1 = (*ap1 / 2)
+		*ap2 = (*ap2 / 2)
+		*ap5 = (*ap5 / 2)
+		*ap6 = (*ap6 / 2)
+
+		i += 8
+	}
 }

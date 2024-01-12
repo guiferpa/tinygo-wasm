@@ -52,8 +52,8 @@ async function run(inst) {
     reader.readAsDataURL(blob);
   });
 
-  const $filters = $control.querySelectorAll("#filters");
-  const [$bp] = $filters;
+  const $filters = $control.querySelector("#filters");
+  const [$bp, $red] = $filters.querySelectorAll("button");
   $bp.addEventListener("click", () => {
     console.time(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
     if (__RUNNER__ === "JavaScript") {
@@ -87,6 +87,40 @@ async function run(inst) {
       $modified.src = $element.toDataURL("image/jpeg");
     }
     console.timeEnd(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
+  });
+  $red.addEventListener("click", () => {
+    console.time(`[${__RUNNER__}] applyRedFilter`);
+    if (__RUNNER__ === "JavaScript") {
+      const canvas = loadImageIntoCanvas($modified);
+      const b64 = js.applyRedFilter(canvas);
+      $modified.src = b64;
+    }
+
+    if (__RUNNER__ === "WebAssembly") {
+      const { $element, context } = loadImageIntoCanvas($modified);
+      const image = context.getImageData(0, 0, $element.width, $element.height);
+      const buffer = new Uint8Array(image.data.buffer);
+      const pointer = malloc(buffer.length);
+
+      const mem = new Uint8ClampedArray(
+        wasm.memory.buffer,
+        pointer,
+        buffer.length
+      );
+
+      mem.set(buffer);
+
+      wasm.applyRedFilter(pointer, buffer.length);
+
+      const nimage = context.createImageData($element.width, $element.height);
+
+      nimage.data.set(mem);
+
+      context.putImageData(nimage, 0, 0);
+
+      $modified.src = $element.toDataURL("image/jpeg");
+    }
+    console.timeEnd(`[${__RUNNER__}] applyRedFilter`);
   });
 
   const $actions = $control.querySelectorAll("#actions > button");
