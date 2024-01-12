@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image editor</title>
+    <style>
+      html,
+      body {
+        padding: 0px;
+      }
+
+      #runtime {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+      }
+
+      #root {
+        background-color: #eee;
+        max-width: 600px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        margin-top: 100px;
+        padding: 8px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      #viewer {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #control {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      #actions,
+      #filters {
+        padding: 4px;
+      }
+
+      #actions {
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="runner">
+      <span>Runner:</span>
+      <button>JavaScript</button>
+    </div>
+    <h3 id="loading">Loading...</h3>
+    <div id="root" style="display: none">
+      <div id="viewer" style="display: none">
+        <img width="280px" height="240px" src="" />
+        <img width="280px" height="240px" src="" />
+      </div>
+      <div id="uploader">
+        <input type="file" accept="image/png, image/jpeg" />
+      </div>
+      <div id="control" style="display: none">
+        <div id="filters">
+          <button id="black-and-white">Black and white</button>
+        </div>
+        <div id="actions">
+          <button>Make download</button>
+          <button>Reset filter</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      var __RUNNER__ = "JavaScript";
+      const $runner = document.querySelector("#runner > button");
+      $runner.addEventListener("click", () => {
+        __RUNNER__ = __RUNNER__ === "JavaScript" ? "WebAssembly" : "JavaScript";
+        $runner.innerText = __RUNNER__;
+      });
+    </script>
+    <script src="./imports/tinygo.js"></script>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
