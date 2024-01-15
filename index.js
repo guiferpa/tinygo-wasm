@@ -55,11 +55,14 @@ async function run(inst) {
   const $filters = $control.querySelector("#filters");
   const [$bp, $red] = $filters.querySelectorAll("button");
   $bp.addEventListener("click", () => {
-    console.time(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
     if (__RUNNER__ === "JavaScript") {
-      const canvas = loadImageIntoCanvas($modified);
-      const b64 = js.applyBlackAndWhiteFilter(canvas);
-      $modified.src = b64;
+      const { $element, context } = loadImageIntoCanvas($modified);
+      const image = context.getImageData(0, 0, $element.width, $element.height);
+      console.time(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
+      js.applyBlackAndWhiteFilter(image);
+      console.timeEnd(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
+      context.putImageData(image, 0, 0);
+      $modified.src = $element.toDataURL("image/jpeg");
     }
 
     if (__RUNNER__ === "WebAssembly") {
@@ -76,7 +79,9 @@ async function run(inst) {
 
       mem.set(buffer);
 
+      console.time(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
       wasm.applyBlackAndWhiteFilter(pointer, buffer.length);
+      console.timeEnd(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
 
       const nimage = context.createImageData($element.width, $element.height);
 
@@ -86,14 +91,18 @@ async function run(inst) {
 
       $modified.src = $element.toDataURL("image/jpeg");
     }
-    console.timeEnd(`[${__RUNNER__}] applyBlackAndWhiteFilter`);
   });
   $red.addEventListener("click", () => {
-    console.time(`[${__RUNNER__}] applyRedFilter`);
     if (__RUNNER__ === "JavaScript") {
-      const canvas = loadImageIntoCanvas($modified);
-      const b64 = js.applyRedFilter(canvas);
-      $modified.src = b64;
+      const { $element, context } = loadImageIntoCanvas($modified);
+      const image = context.getImageData(0, 0, $element.width, $element.height);
+
+      console.time(`[${__RUNNER__}] applyRedFilter`);
+      js.applyRedFilter(image);
+      console.timeEnd(`[${__RUNNER__}] applyRedFilter`);
+
+      context.putImageData(image, 0, 0);
+      $modified.src = $element.toDataURL("image/jpeg");
     }
 
     if (__RUNNER__ === "WebAssembly") {
@@ -110,7 +119,9 @@ async function run(inst) {
 
       mem.set(buffer);
 
+      console.time(`[${__RUNNER__}] applyRedFilter`);
       wasm.applyRedFilter(pointer, buffer.length);
+      console.timeEnd(`[${__RUNNER__}] applyRedFilter`);
 
       const nimage = context.createImageData($element.width, $element.height);
 
@@ -120,7 +131,6 @@ async function run(inst) {
 
       $modified.src = $element.toDataURL("image/jpeg");
     }
-    console.timeEnd(`[${__RUNNER__}] applyRedFilter`);
   });
 
   const $actions = $control.querySelectorAll("#actions > button");

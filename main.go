@@ -14,6 +14,7 @@ func applyBlackAndWhiteFilter(p *int, size int) {
 		ap1 := (*byte)(unsafe.Pointer(up + uintptr(i+1)))
 		ap2 := (*byte)(unsafe.Pointer(up + uintptr(i+2)))
 
+		// filter := byte((uint16(*ap0) + uint16(*ap1) + uint16(*ap2)) / 3)
 		filter := (*ap0 / 3) + (*ap1 / 3) + (*ap2 / 3)
 
 		*ap0 = filter
